@@ -5,6 +5,15 @@
  */
 package simulator;
 
+import java.awt.Color;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+
 /**
  *
  * @author madhushaprasad
@@ -16,6 +25,8 @@ public class Simulator extends javax.swing.JFrame {
      */
     public Simulator() {
         initComponents();
+
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -126,8 +137,34 @@ public class Simulator extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtExpressionKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtExpressionKeyReleased
+        String textAreaInput = txtArea.getText();
+        String textRegExInput = txtExpression.getText();
+        Pattern pattern;
+        Matcher matcher;
 
-       
+        if (txtExpression.getText().isEmpty()) {
+            txtArea.getHighlighter().removeAllHighlights();
+            return;
+        }
+
+        txtArea.getHighlighter().removeAllHighlights();
+        try {
+            pattern = Pattern.compile(textRegExInput, Pattern.MULTILINE);
+            matcher = pattern.matcher(textAreaInput);
+        } catch (PatternSyntaxException exp) {
+            return;
+
+        }
+
+        while (matcher.find()) {
+            try {
+                txtArea.getHighlighter().addHighlight(matcher.start(), matcher.end(), new DefaultHighlighter.DefaultHighlightPainter(Color.ORANGE));
+            } catch (BadLocationException ex) {
+                Logger.getLogger(simulator.Simulator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        txtArea.repaint();
     }//GEN-LAST:event_txtExpressionKeyReleased
 
     private void txtAreaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAreaKeyPressed
@@ -135,7 +172,7 @@ public class Simulator extends javax.swing.JFrame {
     }//GEN-LAST:event_txtAreaKeyPressed
 
     private void txtAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAreaKeyReleased
-       
+        txtExpressionKeyReleased(evt);
     }//GEN-LAST:event_txtAreaKeyReleased
 
     private void txtAreaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtAreaKeyTyped
